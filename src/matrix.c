@@ -93,6 +93,17 @@ Matrix* Mmul(Matrix* a, Matrix* b) {
     return c;
 }
 
+Matrix* transpose(Matrix* a) {
+    Matrix* result = make_matrix(a->cols, a->rows);
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            set_value(result, j, i, get_value(a, i, j));
+        }
+    }
+    return result;
+}
+
+
 
 void free_matrix(Matrix* ptr) {
     if (ptr != NULL) {

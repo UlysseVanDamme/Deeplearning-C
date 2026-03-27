@@ -125,6 +125,32 @@ void test_multiply() {
     free_matrix(C);
 }
 
+void test_transpose() {
+    printf("\nTest: transpose matrix\n");
+
+    Matrix* A = make_empty_matrix(2, 3);
+
+    set_value(A, 0, 0, 1);
+    set_value(A, 0, 1, 2);
+    set_value(A, 0, 2, 3);
+    set_value(A, 1, 0, 4);
+    set_value(A, 1, 1, 5);
+    set_value(A, 1, 2, 6);
+
+    Matrix* transposed_matrix = transpose(A);
+
+    ASSERT_EQ(get_value(transposed_matrix, 0, 0), 1.0f);
+    ASSERT_EQ(get_value(transposed_matrix, 0, 1), 4.0f);
+    ASSERT_EQ(get_value(transposed_matrix, 1, 0), 2.0f);
+    ASSERT_EQ(get_value(transposed_matrix, 1, 1), 5.0f);
+    ASSERT_EQ(get_value(transposed_matrix, 2, 0), 3.0f);
+    ASSERT_EQ(get_value(transposed_matrix, 2, 1), 6.0f);
+
+    print_matrix(transposed_matrix);
+
+    free(A);
+    free(transposed_matrix);
+}
 
 
 int main() {
@@ -134,6 +160,7 @@ int main() {
     test_print();
     test_add();
     test_multiply();
+    test_transpose();
 
     return 0;
 }

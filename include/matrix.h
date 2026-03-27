@@ -19,4 +19,6 @@ void print_matrix(Matrix* m);
 Matrix* Mmul(Matrix* a, Matrix* b);
 Matrix* Madd(Matrix* a, Matrix* b);
 
+Matrix* transpose(Matrix* a);
+
 #endif
