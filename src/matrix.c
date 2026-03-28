@@ -61,7 +61,7 @@ void set_value(Matrix* m, int row, int col, float number) {
     m->data[row * m->cols + col] = number;
 }
 
-Matrix* Madd(Matrix* a, Matrix* b) {
+Matrix* matrix_add(Matrix* a, Matrix* b) {
     if (a->cols != b->cols || a->rows != b->rows) {
         printf("Matrices don't have same dimension");
         return NULL;
@@ -75,7 +75,7 @@ Matrix* Madd(Matrix* a, Matrix* b) {
     return result;
 }
 
-Matrix* Mmul(Matrix* a, Matrix* b) {
+Matrix* matrix_multiply(Matrix* a, Matrix* b) {
     if (a->cols != b->rows) {
         printf("Matrix dimensions invalid for multiplication");
         return NULL;
@@ -83,7 +83,7 @@ Matrix* Mmul(Matrix* a, Matrix* b) {
     Matrix* c = make_matrix(a->rows, b->cols);
     for (int i = 0; i < c->rows; i++) {
         for (int j = 0; j < c->cols; j++) {
-            int sum = 0;
+            float sum = 0;
             for (int k = 0; k < a->cols; k++) {
                 sum += get_value(a, i, k) * get_value(b, k, j);
             }
@@ -104,6 +104,34 @@ Matrix* transpose(Matrix* a) {
 }
 
 
+float trace(Matrix* a) {
+    if (!is_square(a)) {
+        printf("not a square matrix");
+        return 0;
+    }
+    float sum = 0;
+    for (int i = 0; i < a->cols;i++) {
+        sum += get_value(a, i, i);
+    }
+    return sum;
+}
+
+int is_square(Matrix* a) {
+    int isSq = (a->cols == a->rows);
+    return isSq;
+}
+
+float frobenius_norm(Matrix* a) {
+    int sum = 0;
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            sum += pow(get_value(a, i, j), 2);
+        }
+    }
+
+    float res = sqrt(sum);
+    return res;
+}
 
 void free_matrix(Matrix* ptr) {
     if (ptr != NULL) {

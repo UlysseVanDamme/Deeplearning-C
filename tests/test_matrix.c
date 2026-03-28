@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "matrix.h"
 
 #define ASSERT_EQ(actual, expected) \
@@ -79,7 +80,7 @@ void test_add() {
     set_value(m2, 0, 1, -2);
     set_value(m2, 1, 1, 4);
 
-    Matrix* m3 = Madd(m1, m2);
+    Matrix* m3 = matrix_add(m1, m2);
 
     ASSERT_EQ(get_value(m3, 0, 0), -6.0f);
     ASSERT_EQ(get_value(m3, 0, 1), 2.0f);
@@ -111,7 +112,7 @@ void test_multiply() {
     set_value(B, 2, 0, 11);
     set_value(B, 2, 1, 12);
 
-    Matrix* C = Mmul(A, B); 
+    Matrix* C = matrix_multiply(A, B); 
 
     ASSERT_EQ(get_value(C, 0, 0), 58.0f);  
     ASSERT_EQ(get_value(C, 0, 1), 64.0f); 
@@ -152,6 +153,20 @@ void test_transpose() {
     free(transposed_matrix);
 }
 
+void test_trace() {
+    printf("\nTest: add matrix\n");
+
+    Matrix* m1 = make_empty_matrix(2, 2);
+
+    set_value(m1, 0, 0, -2);
+    set_value(m1, 1, 1, 5);
+
+    float tr = trace(m1);
+
+    ASSERT_EQ(tr, 3.0f);
+
+    free(m1);
+}
 
 int main() {
     test_set_get();
@@ -161,6 +176,6 @@ int main() {
     test_add();
     test_multiply();
     test_transpose();
-
+    test_trace();
     return 0;
 }
