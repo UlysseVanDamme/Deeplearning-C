@@ -17,6 +17,7 @@ float dot_product(Matrix* v1, Matrix* v2) {
         return 0;
     }
     float result = get_value(matrix_multiply(transpose(v1), v2), 0, 0);
+    return result;
 }
 
 float p_norm(Matrix* vector, int p) {
