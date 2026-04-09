@@ -24,4 +24,6 @@ float trace(Matrix* a);
 
 Matrix* transpose(Matrix* a);
 
+Matrix* identity_matrix(int size);
+
 #endif

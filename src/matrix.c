@@ -133,6 +133,14 @@ float frobenius_norm(Matrix* a) {
     return res;
 }
 
+Matrix* identity_matrix(int size) {
+    Matrix* result = make_empty_matrix(size, size);
+    for (int i = 0; i < size; i++) {
+        set_value(result, i, i, 1);
+    }
+    return result;
+}
+
 void free_matrix(Matrix* ptr) {
     if (ptr != NULL) {
         free(ptr->data);
