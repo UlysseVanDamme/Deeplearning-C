@@ -46,16 +46,16 @@ QR_result QR_decomposition(Matrix* A) {
         for (int j = 0; j < m; j++) {
             Matrix* u = make_empty_matrix(len, 1);
             for (int k = 0; k < len; k++) {
-                set_value(u, k, 0, get_value(Q,i+k, j));
+                set_value(u, k, 0, get_value(Q, j, i + k));
             }
             float uv = dot_product(u, v);
 
             Matrix* temp = copy_matrix(v);
-            matrix_scale(temp, 2.0f * uv/v_dot);
+            matrix_scale(temp, 2.0f * uv / v_dot);
             Matrix* new_u = matrix_sub(u, temp);
 
             for (int k = 0; k < len; k++) {
-                set_value(Q, i + k, j, get_value(new_u, k, 0));
+                set_value(Q, j, i + k, get_value(new_u, k, 0));
             }
             free_matrix(u);
             free_matrix(temp);
@@ -68,4 +68,20 @@ QR_result QR_decomposition(Matrix* A) {
     result.Q = Q;
     result.R = R;
     return result;
+}
+
+Matrix* backward_substitution(Matrix* U, Matrix* B) {
+    Matrix* X = make_empty_matrix(U->cols, 1);
+    for (int j = U->rows - 1; j >= 0; j--) {
+        float val = get_value(U, j, j);
+        if (val == 0) {
+            return NULL;
+        }
+        float xj = get_value(B, j, 0) / val;
+        set_value(X, j, 0, xj);
+        for (int i = 0; i < j; i++) {
+            set_value(B, i, 0, get_value(B, i, 0) - get_value(U, i, j)*xj);
+        }
+    }
+    return X;
 }

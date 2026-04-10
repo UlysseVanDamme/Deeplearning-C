@@ -11,4 +11,6 @@ void LU_decomposition(Matrix* a, Matrix* L, Matrix* U);
 
 QR_result QR_decomposition(Matrix* a); // Using householder transformation
 
+Matrix* backward_substitution(Matrix* U, Matrix* B);
+
 #endif

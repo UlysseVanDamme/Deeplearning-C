@@ -20,5 +20,15 @@ test_vector:
 	gcc tests/test_vector.c src/vector.c src/matrix.c -Iinclude -o build/test_vector
 	./build/test_vector
 
+test_linalg:
+	mkdir -p build
+	gcc tests/test_linalg.c src/vector.c src/matrix.c src/linalg.c src/probability.c -Iinclude -o build/test_linalg -lm
+	./build/test_linalg
+
+test_ml:
+	mkdir -p build
+	gcc tests/test_ml.c src/vector.c src/matrix.c src/linalg.c src/probability.c src/machine_learning.c -Iinclude -o build/test_ml -lm
+	./build/test_ml
+
 clean:
 	rm -rf build
