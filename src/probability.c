@@ -1,6 +1,7 @@
 #include "probability.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 float mean(float* data, int size) {
     float sum = 0;
@@ -24,4 +25,14 @@ float variance(float* data, int size) {
 float standard_deviation(float* data, int size) {
     float result = sqrt(variance(data, size));
     return result;
+}
+
+int sign(float n) {
+    if (n < 0) {
+        return -1;
+    } else if(n > 0) {
+        return 1;
+    } else  {
+        return 0;
+    }
 }

@@ -18,6 +18,9 @@ void print_matrix(Matrix* m);
 
 Matrix* matrix_multiply(Matrix* a, Matrix* b);
 Matrix* matrix_add(Matrix* a, Matrix* b);
+Matrix* matrix_sub(Matrix* a, Matrix* b);
+
+void matrix_scale(Matrix* a, float b);
 
 int is_square(Matrix* a);
 float trace(Matrix* a);
@@ -25,5 +28,7 @@ float trace(Matrix* a);
 Matrix* transpose(Matrix* a);
 
 Matrix* identity_matrix(int size);
+
+Matrix* copy_matrix(Matrix* m);
 
 #endif

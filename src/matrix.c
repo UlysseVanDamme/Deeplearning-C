@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 Matrix* make_matrix(int rows, int cols) {
     Matrix* m = malloc(sizeof(Matrix));
@@ -75,6 +76,24 @@ Matrix* matrix_add(Matrix* a, Matrix* b) {
     return result;
 }
 
+Matrix* matrix_sub(Matrix* a, Matrix* b) {
+    if (a->rows != b->rows || a->cols != b->cols) {
+        printf("Matrices don't have same dimension\n");
+        return NULL;
+    }
+
+    Matrix* result = make_matrix(a->rows, a->cols);
+
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            set_value(result, i, j,
+                      get_value(a, i, j) - get_value(b, i, j));
+        }
+    }
+
+    return result;
+}
+
 Matrix* matrix_multiply(Matrix* a, Matrix* b) {
     if (a->cols != b->rows) {
         printf("Matrix dimensions invalid for multiplication");
@@ -92,6 +111,15 @@ Matrix* matrix_multiply(Matrix* a, Matrix* b) {
     }
     return c;
 }
+
+void matrix_scale(Matrix* a, float b) {
+    for (int i = 0; i < a->rows; i++) {
+        for (int j = 0; j < a->cols; j++) {
+            set_value(a, i, j, get_value(a, i, j) * b);
+        }
+    }
+}
+
 
 Matrix* transpose(Matrix* a) {
     Matrix* result = make_matrix(a->cols, a->rows);
@@ -141,6 +169,16 @@ Matrix* identity_matrix(int size) {
     return result;
 }
 
+Matrix* copy_matrix(Matrix* m) {
+    Matrix* result = make_empty_matrix(m->rows, m->cols);
+    for (int i = 0; i < m->rows; i++) {
+        for (int j = 0; j < m->cols; j++) {
+            set_value(result, i, j, get_value(m, i, j));
+        }
+    }
+    return result;
+}
+
 void free_matrix(Matrix* ptr) {
     if (ptr != NULL) {
         free(ptr->data);
@@ -152,7 +190,7 @@ void print_matrix(Matrix* m) {
     for (int i = 0; i < m->rows; i++) {
         printf("| ");
         for (int j = 0; j < m->cols; j++) {
-            printf("%6.2f ", m->data[i * m->cols + j]);
+            printf("%6.4f ", m->data[i * m->cols + j]);
         }
         printf("|\n");
     }
