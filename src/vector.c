@@ -34,7 +34,7 @@ float max_norm(Matrix* vector) {
     }
     float max = 0;
     for (int i = 0; i < vector->rows; i++) {
-        float val = abs(get_value(vector, i, 0));
+        float val = fabsf(get_value(vector, i, 0));
         if (val > max) {
             max = val;
         }

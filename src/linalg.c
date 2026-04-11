@@ -1,8 +1,8 @@
-#include "vector.h"
 #include "probability.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <linalg.h>
+#include "vector.h"
 
 QR_result QR_decomposition(Matrix* A) {
     // Calculates QR decomposition using householder transformations (pain to implement)
@@ -85,3 +85,35 @@ Matrix* backward_substitution(Matrix* U, Matrix* B) {
     }
     return X;
 }
+
+// eigenvalues and eigenvectors
+
+float power_iteration(Matrix* a, int iterations) {
+    srand(time(NULL));
+
+    if (!is_square(a)) {
+        printf("Matrix is not square\n");
+        return 0;
+    }
+
+    int n = a->rows;
+
+    Matrix* x = make_empty_matrix(n, 1);
+    for (int i = 0; i < n; i++) {
+        set_value(x, i, 0, (float)(rand() % 10 + 1));
+    }
+
+    float lambda = 0;
+
+    for (int it = 0; it < iterations; it++) {
+        Matrix* y = matrix_multiply(a, x);
+        lambda = max_norm(y);
+        x = y;
+
+        matrix_scale(x, 1.0f / max_norm(x));
+    }
+
+    free_matrix(x);
+    return lambda;
+}
+
