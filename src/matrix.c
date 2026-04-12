@@ -169,7 +169,7 @@ Matrix* identity_matrix(int size) {
     return result;
 }
 
-Matrix* copy_matrix(Matrix* m) {
+Matrix* copy_new_matrix(Matrix* m) {
     Matrix* result = make_empty_matrix(m->rows, m->cols);
     for (int i = 0; i < m->rows; i++) {
         for (int j = 0; j < m->cols; j++) {
@@ -178,6 +178,15 @@ Matrix* copy_matrix(Matrix* m) {
     }
     return result;
 }
+
+void copy_matrix(Matrix* m1, Matrix* m2) {
+    for (int i = 0; i < m1->rows; i++) {
+        for (int j = 0; j < m1->cols; j++) {
+            set_value(m2, i, j, get_value(m1, i, j));
+        }
+    }
+}
+
 
 void free_matrix(Matrix* ptr) {
     if (ptr != NULL) {

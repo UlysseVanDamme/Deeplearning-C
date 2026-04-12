@@ -29,6 +29,8 @@ Matrix* transpose(Matrix* a);
 
 Matrix* identity_matrix(int size);
 
-Matrix* copy_matrix(Matrix* m);
+Matrix* copy_new_matrix(Matrix* m);
+void copy_matrix(Matrix* m1, Matrix* m2);
+
 
 #endif

@@ -7,13 +7,19 @@ typedef struct {
     Matrix* R;
 } QR_result;
 
-void LU_decomposition(Matrix* a, Matrix* L, Matrix* U); // TODO
+typedef struct {
+    Matrix* L;
+    Matrix* U;
+} LU_result;
+
+LU_result LU_decomposition(Matrix* A); // TODO
 
 Matrix* lineair_solver(Matrix*a, Matrix* b); // TODO
 
 QR_result QR_decomposition(Matrix* a); // Using householder transformation
 
 Matrix* backward_substitution(Matrix* U, Matrix* B);
+Matrix* forward_substitution(Matrix* L, Matrix* B);
 
 // Eigenvalues and Eigenvectors
 

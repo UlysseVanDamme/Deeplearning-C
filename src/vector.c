@@ -69,11 +69,11 @@ Matrix* get_col(Matrix* matrix, int col) {
 void set_row(Matrix* matrix, Matrix* r, int row) {
     if (!is_vector(r)) {
         printf("Not a vector\n");
-        return 0;
+        return;
     }
     if (row > (matrix->rows - 1)) {
         printf("index out of bounds\n");
-        return NULL;
+        return;
     }
     for (int i = 0; i < matrix->cols; i++) {
         set_value(matrix, row, i, get_value(r, 0, i));
@@ -83,11 +83,11 @@ void set_row(Matrix* matrix, Matrix* r, int row) {
 void set_col(Matrix* matrix, Matrix* c, int col) {
     if (!is_vector(c)) {
         printf("Not a vector");
-        return 0;
+        return;
     }
     if (col > (matrix->cols - 1)) {
         printf("index out of bounds");
-        return NULL;
+        return;
     }
     for (int i = 0; i < matrix->rows; i++) {
         set_value(matrix, i, col, get_value(c, i, 0));
