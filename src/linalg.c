@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <linalg.h>
+#include <math.h>
 #include <time.h>
 #include "vector.h"
 #include "probability.h"
@@ -33,11 +34,45 @@ LU_result LU_decomposition(Matrix* A) {
     return result;                                                                                                                                                                    
 }
 
+Matrix* cholesky_factorization(Matrix* A) {
+    if (!is_square(A)) {
+        printf("Matrix is not square\n");
+        return NULL;
+    }
+    int n = A->cols;
+    Matrix* L = make_empty_matrix(n, n);
+
+    for (int j = 0; j < n; j++) {
+        float sum = 0;
+        for (int k = 0; k < j; k++) {
+            sum += get_value(L, j, k) * get_value(L, j, k);
+        }
+        float diag = get_value(A, j, j) - sum;
+        if (diag <= 0) {
+            printf("Matrix is not positive definite\n");
+            free_matrix(L);
+            return NULL;
+        }
+        set_value(L, j, j, sqrtf(diag));
+
+        for (int i = j + 1; i < n; i++) {
+            float sum2 = 0;
+            for (int k = 0; k < j; k++) {
+                sum2 += get_value(L, i, k) * get_value(L, j, k);
+            }
+            set_value(L, i, j, (get_value(A, i, j) - sum2) / get_value(L, j, j));
+        }
+    }
+    return L;
+}
+
 Matrix* lineair_solver(Matrix*a, Matrix* b) {
     LU_result LU = LU_decomposition(a);
     Matrix* y = forward_substitution(LU.L, b);
     Matrix* x = backward_substitution(LU.U, y);
     free_matrix(y);
+    free_matrix(LU.L);
+    free_matrix(LU.U);
     return x;
 }
 
@@ -115,11 +150,12 @@ Matrix* backward_substitution(Matrix* U, Matrix* B) {
         if (val == 0) {
             return NULL;
         }
-        float xj = get_value(B, j, 0) / val;
-        set_value(X, j, 0, xj);
-        for (int i = 0; i < j; i++) {
-            set_value(B, i, 0, get_value(B, i, 0) - get_value(U, i, j)*xj);
+        float sum = 0;
+        for (int i = j + 1; i < U->cols; i++) {
+            sum += get_value(U, j, i) * get_value(X, i, 0);
         }
+        float xj = (get_value(B, j, 0) - sum) / val;
+        set_value(X, j, 0, xj);
     }
     return X;
 }
@@ -131,11 +167,12 @@ Matrix* forward_substitution(Matrix* L, Matrix* B) {
         if (val == 0) {
             return NULL;
         }
-        float xj = get_value(B, j, 0) / val;
-        set_value(X, j, 0, xj);
-        for (int i = j + 1; i < L->rows; i++) {
-            set_value(B, i, 0, get_value(B, i, 0) - get_value(L, i, j)*xj);
+        float sum = 0;
+        for (int i = 0; i < j; i++) {
+            sum += get_value(L, j, i) * get_value(X, i, 0);
         }
+        float xj = (get_value(B, j, 0) - sum) / val;
+        set_value(X, j, 0, xj);
     }
     return X;
 }
@@ -188,18 +225,28 @@ float rayleigh_quotient_iteration(Matrix* a, int iterations) {
     float sigma = 0.0f;
     for (int it = 0; it < iterations; it++) {
         Matrix* Ax = matrix_multiply(a, x);
-        sigma = dot_product(x, Ax) / dot_product(x, x);
+        float sigma_new = dot_product(x, Ax) / dot_product(x, x);
+        free_matrix(Ax);
+
+        if (it > 0 && fabsf(sigma_new - sigma) < 1e-10f) {
+            sigma = sigma_new;
+            break;
+        }
+        sigma = sigma_new;
 
         Matrix* I = identity_matrix(n);
         matrix_scale(I, sigma);
         Matrix* A_shifted = matrix_sub(a, I);
-        Matrix* x_new = matrix_multiply(A_shifted, x);
+        Matrix* x_new = lineair_solver(A_shifted, x);
 
-        free_matrix(x);
-        free_matrix(Ax);
         free_matrix(I);
         free_matrix(A_shifted);
 
+        if (x_new == NULL) {
+            break;
+        }
+
+        free_matrix(x);
         x = x_new;
         matrix_scale(x, 1.0f / max_norm(x));
     }
