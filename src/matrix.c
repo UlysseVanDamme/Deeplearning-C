@@ -161,6 +161,14 @@ float frobenius_norm(Matrix* a) {
     return res;
 }
 
+float matrix_norm_1(Matrix* a) {
+    return 0.0f;
+}
+
+float matrix_norm_inf(Matrix* a) {
+    return 0.0f;
+}
+
 Matrix* identity_matrix(int size) {
     Matrix* result = make_empty_matrix(size, size);
     for (int i = 0; i < size; i++) {

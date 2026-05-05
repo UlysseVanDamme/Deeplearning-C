@@ -14,6 +14,13 @@ typedef struct {
     Matrix* U; /**< Upper triangular matrix. */
 } LU_result;
 
+/** @brief Result of a pivoted LU decomposition: PA = L * U. */
+typedef struct {
+    Matrix* P; /**< Permutation matrix. */
+    Matrix* L; /**< Lower triangular matrix. */
+    Matrix* U; /**< Upper triangular matrix. */
+} PLU_result;
+
 /**
  * @brief Compute the LU decomposition of a square matrix.
  * @param A Square matrix to decompose.
@@ -59,6 +66,40 @@ Matrix* backward_substitution(Matrix* U, Matrix* B);
  */
 Matrix* forward_substitution(Matrix* L, Matrix* B);
 
+/**
+ * @brief Compute the LU decomposition with partial pivoting: PA = L * U.
+ * @param A Square matrix to decompose.
+ * @return PLU_result containing P, L, U such that PA = LU.
+ */
+PLU_result LU_decomposition_pivoted(Matrix* A);
+
+/**
+ * @brief Estimate the condition number cond(A) = ||A|| * ||A^-1|| using the 1-norm.
+ * @param a Square matrix.
+ * @return Condition number estimate.
+ */
+float condition_number(Matrix* a);
+
+/**
+ * @brief Solve Ax = b iteratively using the Jacobi method.
+ * @param A Coefficient matrix (must be diagonally dominant for convergence).
+ * @param b Right-hand side vector.
+ * @param tol Convergence tolerance on ||x_{k+1} - x_k||.
+ * @param max_iter Maximum number of iterations.
+ * @return Solution vector x, or NULL on failure to converge.
+ */
+Matrix* jacobi_solver(Matrix* A, Matrix* b, float tol, int max_iter);
+
+/**
+ * @brief Solve Ax = b iteratively using the Gauss-Seidel method.
+ * @param A Coefficient matrix (must be diagonally dominant or SPD for convergence).
+ * @param b Right-hand side vector.
+ * @param tol Convergence tolerance on ||x_{k+1} - x_k||.
+ * @param max_iter Maximum number of iterations.
+ * @return Solution vector x, or NULL on failure to converge.
+ */
+Matrix* gauss_seidel_solver(Matrix* A, Matrix* b, float tol, int max_iter);
+
 /* Eigenvalues and Eigenvectors */
 
 /**
@@ -80,5 +121,31 @@ float power_iteration(Matrix* a, int iterations);
  * @return Approximated eigenvalue.
  */
 float rayleigh_quotient_iteration(Matrix* a, int iterations);
+
+/**
+ * @brief Find the eigenvalue of A nearest to shift using inverse power iteration.
+ * @param a Square matrix.
+ * @param shift Spectral shift mu; algorithm converges to eigenvalue closest to mu.
+ * @param iterations Maximum number of iterations.
+ * @return Eigenvalue of A nearest to shift.
+ */
+float inverse_power_iteration(Matrix* a, float shift, int iterations);
+
+/**
+ * @brief Compute all eigenvalues of A using the QR algorithm.
+ * @param a Square matrix (eigenvalues must be real).
+ * @param iterations Number of QR iterations to perform.
+ * @return Column vector (n x 1) of eigenvalue approximations.
+ */
+Matrix* qr_algorithm(Matrix* a, int iterations);
+
+/**
+ * @brief Remove eigenvalue lambda_1 from A via Hotelling deflation: A1 = A - lambda * v * v^T.
+ * @param a Square symmetric matrix.
+ * @param eigenvalue The eigenvalue to deflate out.
+ * @param eigenvector Corresponding unit eigenvector (n x 1).
+ * @return New deflated matrix with eigenvalue replaced by 0.
+ */
+Matrix* deflation(Matrix* a, float eigenvalue, Matrix* eigenvector);
 
 #endif

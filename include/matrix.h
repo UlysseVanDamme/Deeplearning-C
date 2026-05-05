@@ -51,6 +51,15 @@ void free_matrix(Matrix* m);
 /** @brief Print a matrix to stdout in a readable format. */
 void print_matrix(Matrix* m);
 
+/** @brief Compute the max column-sum norm (1-norm): max_j sum_i |a_ij|. */
+float matrix_norm_1(Matrix* a);
+
+/** @brief Compute the max row-sum norm (infinity-norm): max_i sum_j |a_ij|. */
+float matrix_norm_inf(Matrix* a);
+
+/** @brief Compute the Frobenius norm: sqrt(sum of squared elements). */
+float frobenius_norm(Matrix* a);
+
 /**
  * @brief Element-wise matrix multiplication C = A * B.
  * @param a Left matrix (m x n).

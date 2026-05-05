@@ -210,6 +210,26 @@ float power_iteration(Matrix* a, int iterations) {
     return lambda;
 }
 
+PLU_result LU_decomposition_pivoted(Matrix* A) {
+    PLU_result result;
+    result.P = NULL;
+    result.L = NULL;
+    result.U = NULL;
+    return result;
+}
+
+float condition_number(Matrix* a) {
+    return 0.0f;
+}
+
+Matrix* jacobi_solver(Matrix* A, Matrix* b, float tol, int max_iter) {
+    return NULL;
+}
+
+Matrix* gauss_seidel_solver(Matrix* A, Matrix* b, float tol, int max_iter) {
+    return NULL;
+}
+
 float rayleigh_quotient_iteration(Matrix* a, int iterations) {
     srand(time(NULL));
     if (!is_square(a)) {
@@ -253,4 +273,16 @@ float rayleigh_quotient_iteration(Matrix* a, int iterations) {
 
     free_matrix(x);
     return sigma;
+}
+
+float inverse_power_iteration(Matrix* a, float shift, int iterations) {
+    return 0.0f;
+}
+
+Matrix* qr_algorithm(Matrix* a, int iterations) {
+    return NULL;
+}
+
+Matrix* deflation(Matrix* a, float eigenvalue, Matrix* eigenvector) {
+    return NULL;
 }
