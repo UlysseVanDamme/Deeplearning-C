@@ -120,5 +120,11 @@ Matrix* copy_new_matrix(Matrix* m);
  */
 void copy_matrix(Matrix* m1, Matrix* m2);
 
+/** @brief Swap rows r1 and r2 in-place. */
+void swap_rows(Matrix* m, int r1, int r2);
+
+/** @brief Swap columns c1 and c2 in-place. */
+void swap_cols(Matrix* m, int c1, int c2);
+
 
 #endif

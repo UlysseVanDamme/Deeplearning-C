@@ -203,6 +203,22 @@ void free_matrix(Matrix* ptr) {
     }
 }
 
+void swap_rows(Matrix* m, int r1, int r2) {
+    for (int j = 0; j < m->cols; j++) {
+        float tmp = m->data[r1 * m->cols + j];
+        m->data[r1 * m->cols + j] = m->data[r2 * m->cols + j];
+        m->data[r2 * m->cols + j] = tmp;
+    }
+}
+
+void swap_cols(Matrix* m, int c1, int c2) {
+    for (int i = 0; i < m->rows; i++) {
+        float tmp = m->data[i * m->cols + c1];
+        m->data[i * m->cols + c1] = m->data[i * m->cols + c2];
+        m->data[i * m->cols + c2] = tmp;
+    }
+}
+
 void print_matrix(Matrix* m) {
     for (int i = 0; i < m->rows; i++) {
         printf("| ");
