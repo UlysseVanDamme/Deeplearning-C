@@ -34,6 +34,59 @@ LU_result LU_decomposition(Matrix* A) {
     return result;                                                                                                                                                                    
 }
 
+PLU_result LU_decomposition_pivoted(Matrix* A) {
+    int n = A->cols;
+    Matrix* U = copy_new_matrix(A);
+    Matrix* L = identity_matrix(n);
+    Matrix* P = identity_matrix(n);
+
+    for (int k = 0; k < n; k++) {
+        int pivot_row = k;
+        float max_element = fabsf(get_value(U, k, k));
+        for (int i = k + 1; i < n; i++) {
+            float col_element = fabsf(get_value(U, i, k));
+            if (col_element > max_element) {
+                max_element = col_element;
+                pivot_row = i;
+            }
+        }
+
+        if (pivot_row != k) {
+            swap_rows(U, k, pivot_row);
+            swap_rows(P, k, pivot_row);
+            for (int j = 0; j < k; j++) {
+                float tmp = get_value(L, k, j);
+                set_value(L, k, j, get_value(L, pivot_row, j));
+                set_value(L, pivot_row, j, tmp);
+            }
+        }
+
+        Matrix* M  = identity_matrix(n);
+        Matrix* Lj = identity_matrix(n);
+        float a_kk = get_value(U, k, k);
+        for (int j = k + 1; j < n; j++) {
+            float m_jk = get_value(U, j, k) / a_kk;
+            set_value(M,  j, k, -m_jk);
+            set_value(Lj, j, k,  m_jk);
+        }
+        Matrix* F = matrix_multiply(M, U);
+        copy_matrix(F, U);
+        free_matrix(F);
+        Matrix* B = matrix_multiply(L, Lj);
+        copy_matrix(B, L);
+        free_matrix(B);
+        free_matrix(M);
+        free_matrix(Lj);
+    }
+
+    PLU_result result;
+    result.P = P;
+    result.L = L;
+    result.U = U;
+    return result;
+}
+
+
 Matrix* cholesky_factorization(Matrix* A) {
     if (!is_square(A)) {
         printf("Matrix is not square\n");
@@ -208,14 +261,6 @@ float power_iteration(Matrix* a, int iterations) {
 
     free_matrix(x);
     return lambda;
-}
-
-PLU_result LU_decomposition_pivoted(Matrix* A) {
-    PLU_result result;
-    result.P = NULL;
-    result.L = NULL;
-    result.U = NULL;
-    return result;
 }
 
 float condition_number(Matrix* a) {
