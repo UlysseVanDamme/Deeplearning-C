@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "linalg.h"
 
 #define ASSERT_EQ(actual, expected) \
@@ -15,6 +16,14 @@ if ((actual) >= (expected)) { \
 } else { \
     printf("PASS\n"); \
 }
+
+#define TOL 1e-4f
+#define ASSERT_NEAR(actual, expected) \
+    if (fabsf((float)(actual) - (float)(expected)) > TOL) { \
+        printf("FAIL: expected %.6f, got %.6f\n", (float)(expected), (float)(actual)); \
+    } else { \
+        printf("PASS\n"); \
+    }
 
 void test_QR_factorization() {
     // 1 -1.0 1
@@ -173,6 +182,96 @@ void test_cholesky_factorization() {
     free_matrix(LLt);
 }
 
+void test_PLU_reconstruction() {
+    // A = [[2,4,-2],[4,9,-3],[-2,-3,7]]: partial pivoting swaps rows 0 and 1
+    // Verify PA = LU element-wise
+    Matrix* A = make_empty_matrix(3, 3);
+    set_value(A, 0, 0, 2);  set_value(A, 0, 1, 4);  set_value(A, 0, 2, -2);
+    set_value(A, 1, 0, 4);  set_value(A, 1, 1, 9);  set_value(A, 1, 2, -3);
+    set_value(A, 2, 0, -2); set_value(A, 2, 1, -3); set_value(A, 2, 2, 7);
+
+    PLU_result result = LU_decomposition_pivoted(A);
+
+    Matrix* PA = matrix_multiply(result.P, A);
+    Matrix* LU = matrix_multiply(result.L, result.U);
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            ASSERT_NEAR(get_value(LU, i, j), get_value(PA, i, j));
+        }
+    }
+
+    free_matrix(A);
+    free_matrix(result.P);
+    free_matrix(result.L);
+    free_matrix(result.U);
+    free_matrix(PA);
+    free_matrix(LU);
+}
+
+void test_PLU_zero_diagonal() {
+    // A = [[0,1],[1,0]]: naive LU divides by zero; pivoted must swap rows
+    // After pivot: PA = I, so L = I, U = I
+    Matrix* A = make_empty_matrix(2, 2);
+    set_value(A, 0, 0, 0); set_value(A, 0, 1, 1);
+    set_value(A, 1, 0, 1); set_value(A, 1, 1, 0);
+
+    PLU_result result = LU_decomposition_pivoted(A);
+
+    Matrix* PA = matrix_multiply(result.P, A);
+    Matrix* LU = matrix_multiply(result.L, result.U);
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            ASSERT_NEAR(get_value(LU, i, j), get_value(PA, i, j));
+        }
+    }
+
+    free_matrix(A);
+    free_matrix(result.P);
+    free_matrix(result.L);
+    free_matrix(result.U);
+    free_matrix(PA);
+    free_matrix(LU);
+}
+
+void test_PLU_structural() {
+    // A = [[0,1,2],[3,4,5],[6,7,9]] (det = -3, non-singular, needs pivoting on col 0)
+    // Check: L is unit lower triangular, U is upper triangular, P is a permutation
+    Matrix* A = make_empty_matrix(3, 3);
+    set_value(A, 0, 0, 0); set_value(A, 0, 1, 1); set_value(A, 0, 2, 2);
+    set_value(A, 1, 0, 3); set_value(A, 1, 1, 4); set_value(A, 1, 2, 5);
+    set_value(A, 2, 0, 6); set_value(A, 2, 1, 7); set_value(A, 2, 2, 9);
+
+    PLU_result result = LU_decomposition_pivoted(A);
+
+    for (int i = 0; i < 3; i++) {
+        ASSERT_NEAR(get_value(result.L, i, i), 1.0f);
+    }
+    for (int i = 0; i < 3; i++) {
+        for (int j = i + 1; j < 3; j++) {
+            ASSERT_NEAR(get_value(result.L, i, j), 0.0f);
+        }
+    }
+    for (int i = 1; i < 3; i++) {
+        for (int j = 0; j < i; j++) {
+            ASSERT_NEAR(get_value(result.U, i, j), 0.0f);
+        }
+    }
+    for (int i = 0; i < 3; i++) {
+        float row_sum = 0;
+        for (int j = 0; j < 3; j++) {
+            row_sum += get_value(result.P, i, j);
+        }
+        ASSERT_NEAR(row_sum, 1.0f);
+    }
+
+    free_matrix(A);
+    free_matrix(result.P);
+    free_matrix(result.L);
+    free_matrix(result.U);
+}
+
 int main() {
     test_QR_factorization();
     test_poweriteration();
@@ -180,5 +279,8 @@ int main() {
     test_LU_decomposition();
     test_lineair_solver();
     test_cholesky_factorization();
+    test_PLU_reconstruction();
+    test_PLU_zero_diagonal();
+    test_PLU_structural();
     return 0;
 }
