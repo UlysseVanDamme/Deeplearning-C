@@ -6,18 +6,19 @@ OUT = build/main
 
 all:
 	mkdir -p build
-	$(CC) $(SRC) $(CFLAGS) -o $(OUT)
+	$(CC) $(SRC) $(CFLAGS) -o $(OUT) -lm
 
 run: all
 	./$(OUT)
 
 test_matrix:
-	$(CC) tests/test_matrix.c src/matrix.c -Iinclude -o build/test_matrix
+	mkdir -p build
+	$(CC) tests/test_matrix.c src/matrix.c -Iinclude -o build/test_matrix -lm
 	./build/test_matrix
 
 test_vector:
 	mkdir -p build
-	gcc tests/test_vector.c src/vector.c src/matrix.c -Iinclude -o build/test_vector
+	gcc tests/test_vector.c src/vector.c src/matrix.c -Iinclude -o build/test_vector -lm
 	./build/test_vector
 
 test_linalg:
